@@ -1,37 +1,28 @@
-// 16.09.23 | VoiceRecognitionApp - VoiceRecognizerService.swift | Tom Estelrich
+// 16.09.23 | VoiceRecognitionApp - ZupanVoiceRecognizerClient.swift | Tom Estelrich
 
 import Foundation
 import Combine
 
-// MARK: VoiceRecognizerProtocol
+// MARK: VoiceRecognizerClientProtocol
 
-protocol VoiceRecognizerProtocol {
+protocol VoiceRecognizerClientProtocol {
     
-    var recognizableCommands: [DataRecognition] { get }
-    var recognizableParameters: [DataRecognition] { get }
+    associatedtype Command: RawRepresentable where Command.RawValue: StringProtocol
+    associatedtype Parameter: RawRepresentable where Parameter.RawValue: StringProtocol
     
+    func applyConditions(to transcriptionMessage: String)
 }
 
 // MARK: ZupanVoiceRecognizerClient
 
 final class ZupanVoiceRecognizerClient: ObservableObject {
     
-    // MARK: RecognitionMode
+    // MARK: Mode
 
-    enum RecognitionMode: String {
-        case waiting = "waiting"
-        case code = "code"
-        case count = "count"
-    }
-    
-    // MARK: Command
-    
-    enum Command: String {
-        case code = "code"
-        case count = "count"
-        case back = "back"
-        case reset = "reset"
-        case done = "done"
+    enum Mode: String {
+        case waiting
+        case code
+        case count
     }
     
     // MARK: Lifecycle
@@ -43,7 +34,7 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
         service.$transcriptions
             .sink(receiveValue: { [weak self] transcript in
                 guard let self = self, let transcriptMessage = transcript.last?.message else { return }
-                self.executeClientRecognizerRules(with: transcriptMessage)
+                self.applyConditions(to: transcriptMessage)
                 self.rawSpeech.append(transcriptMessage)
             })
             .store(in: &subscriptions)
@@ -71,7 +62,7 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
     
     @Published var recognizerState: VoiceRecognizerService.State?
     @Published var recognizerErrorMessage: String?
-    @Published var recognitionMode: RecognitionMode = .waiting
+    @Published var recognitionMode: Mode = .waiting
     @Published var rawSpeech: [String] = []
     @Published var dataOutputs: [DataOutput] = []
     @Published var parameters: String = ""
@@ -84,12 +75,7 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
         service.toggleState()
     }
         
-    // MARK: Private
-
-    private var service: VoiceRecognizerService
-    private var subscriptions: Set<AnyCancellable> = []
-
-    private func executeClientRecognizerRules(with transcriptionMessage: String) {
+    func applyConditions(to transcriptionMessage: String) {
         if recognitionMode == .waiting {
             setCommand(with: transcriptionMessage)
         } else {
@@ -107,19 +93,24 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
         }
     }
     
+    // MARK: Private
+
+    private var service: VoiceRecognizerService
+    private var subscriptions: Set<AnyCancellable> = []
+
     private func setCommand(with transcriptionMessage: String) {
-        guard let recognizedCommand = recognizableCommands.first(where: { $0.value == transcriptionMessage.lowercased() }) else { return }
+        guard let recognizedCommand = Command.allCases.first(where: { $0.rawValue == transcriptionMessage.lowercased() }) else { return }
         
-        switch recognizedCommand.value {
+        switch recognizedCommand.rawValue {
         case Command.code.rawValue, Command.count.rawValue:
-            self.recognitionMode = RecognitionMode(rawValue: recognizedCommand.value) ?? .waiting
+            self.recognitionMode = Mode(rawValue: recognizedCommand.rawValue) ?? .waiting
         default:
             break
         }
     }
     
     private func setParameter(with transcriptionMessage: String) {
-        guard let recognizedParameter = recognizableParameters.first(where: { $0.value == transcriptionMessage.lowercased() }) else { return }
+        guard let recognizedParameter = Parameter.allCases.first(where: { $0.rawValue == transcriptionMessage.lowercased() }) else { return }
         
         switch self.recognitionMode {
         case .waiting:
@@ -143,46 +134,82 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
     private func done() {
         let dataOutput = DataOutput(command: recognitionMode.rawValue, parameters: parameters)
         dataOutputs.append(dataOutput)
+        service.resetTranscribing()
     }
 }
 
-// MARK: VoiceRecognizerProtocol
+// MARK: VoiceRecognizerClientProtocol
 
-extension ZupanVoiceRecognizerClient: VoiceRecognizerProtocol {
+extension ZupanVoiceRecognizerClient: VoiceRecognizerClientProtocol {
     
-    var recognizableCommands: [DataRecognition] {
-        [
-            DataRecognition(value: "code", transcription: "Code"),
-            DataRecognition(value: "count", transcription: "Count"),
-            DataRecognition(value: "back", transcription: "Back"),
-            DataRecognition(value: "reset", transcription: "Reset"),
-            DataRecognition(value: "done", transcription: "Done")
-        ]
+    // MARK: Command
+    
+    enum Command: String, CaseIterable {
+        case code = "code"
+        case count = "count"
+        case back = "back"
+        case reset = "reset"
+        case done = "done"
+        
+        var transcription: String {
+            switch self {
+            case .code: "Code"
+            case .count: "Count"
+            case .back: "Back"
+            case .reset: "Reset"
+            case .done: "Done"
+            }
+        }
     }
     
-    var recognizableParameters: [DataRecognition] {
-        [
-            DataRecognition(value: "zero", transcription: "0"),
-            DataRecognition(value: "0", transcription: "0"),
-            DataRecognition(value: "one", transcription: "1"),
-            DataRecognition(value: "1", transcription: "1"),
-            DataRecognition(value: "two", transcription: "2"),
-            DataRecognition(value: "2", transcription: "2"),
-            DataRecognition(value: "three", transcription: "3"),
-            DataRecognition(value: "3", transcription: "3"),
-            DataRecognition(value: "four", transcription: "4"),
-            DataRecognition(value: "4", transcription: "4"),
-            DataRecognition(value: "five", transcription: "5"),
-            DataRecognition(value: "5", transcription: "5"),
-            DataRecognition(value: "six", transcription: "6"),
-            DataRecognition(value: "6", transcription: "6"),
-            DataRecognition(value: "seven", transcription: "7"),
-            DataRecognition(value: "7", transcription: "7"),
-            DataRecognition(value: "eight", transcription: "8"),
-            DataRecognition(value: "8", transcription: "8"),
-            DataRecognition(value: "nine", transcription: "9"),
-            DataRecognition(value: "9", transcription: "9")
-        ]
+    // MARK: Parameter
+    
+    enum Parameter: String, CaseIterable {
+        case zero = "zero"
+        case _0 = "0"
+        case one = "one"
+        case _1 = "1"
+        case two = "two"
+        case _2 = "2"
+        case three = "three"
+        case _3 = "3"
+        case four = "four"
+        case _4 = "4"
+        case five = "five"
+        case _5 = "5"
+        case six = "six"
+        case _6 = "6"
+        case seven = "seven"
+        case _7 = "7"
+        case eight = "eight"
+        case _8 = "8"
+        case nine = "nine"
+        case _9 = "9"
+        
+        var transcription: String {
+            switch self {
+            case .zero: "0"
+            case ._0: "0"
+            case .one: "1"
+            case ._1: "1"
+            case .two: "2"
+            case ._2: "2"
+            case .three: "3"
+            case ._3: "3"
+            case .four: "4"
+            case ._4: "4"
+            case .five: "5"
+            case ._5: "5"
+            case .six: "6"
+            case ._6: "6"
+            case .seven: "7"
+            case ._7: "7"
+            case .eight: "8"
+            case ._8: "8"
+            case .nine: "9"
+            case ._9: "9"
+            }
+        }
     }
     
 }

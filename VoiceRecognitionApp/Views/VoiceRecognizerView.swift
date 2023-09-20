@@ -51,7 +51,7 @@ struct VoiceRecognizerView: View {
                     Label(viewModel.speechText, systemImage: viewModel.speechIcon)
                         .fontWeight(.bold)
                         .truncationMode(.head)
-                        .lineLimit(2)
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
                 .padding(12)
@@ -79,7 +79,7 @@ struct VoiceRecognizerView: View {
                     List {
                         ForEach(viewModel.dataOutputs) { dataOutput in
                             VStack(alignment: .leading, spacing: 6) {
-                                Label(dataOutput.command.capitalized, systemImage: viewModel.commandDataOutputIcon)
+                                Label(dataOutput.command.uppercased(), systemImage: viewModel.commandDataOutputIcon)
                                     .fontWeight(.bold)
                                     .foregroundColor(.primary)
                                 
@@ -115,7 +115,7 @@ struct VoiceRecognizerView: View {
     
     // MARK: Private
     
-    @StateObject private var viewModel: VoiceRecognizerViewModel = VoiceRecognizerViewModel(service: ZupanVoiceRecognizerClient())
+    @StateObject private var viewModel: VoiceRecognizerViewModel = VoiceRecognizerViewModel()
     
 }
 

@@ -71,12 +71,6 @@ class VoiceRecognizerService: ObservableObject {
             self.recognitionRequest = request
             
             self.speechRecognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error  in
-                let receivedFinalResult = result?.isFinal ?? false
-                
-                if receivedFinalResult || error != nil {
-                    self?.stopTranscribing()
-                }
-                
                 if let result = result, let bestTranscription = result.bestTranscription.segments.last {
                     self?.transcribe(result: bestTranscription)
                 }
@@ -96,6 +90,14 @@ class VoiceRecognizerService: ObservableObject {
         audioEngine = nil
         recognitionRequest = nil
         transcriptions = []
+    }
+    
+    /// Reset transcribing audio.
+    func resetTranscribing() {
+        speechRecognitionTask?.cancel()
+        audioEngine?.stop()
+        recognitionRequest = nil
+        startTranscribing()
     }
     
     /// Toogle voice's reconizer power state.

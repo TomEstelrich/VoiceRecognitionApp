@@ -5,11 +5,11 @@ import SwiftUI
 // MARK: VoiceRecognizerViewModel
 
 final class VoiceRecognizerViewModel: ObservableObject {
-
+    
     // MARK: Lifecycle
     
-    init(service: ZupanVoiceRecognizerClient) {
-        self.voiceRecognizerClient = service
+    init(client: ZupanVoiceRecognizerClient = ZupanVoiceRecognizerClient()) {
+        self.client = client
     }
     
     // MARK: Internal
@@ -19,12 +19,12 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var errorText: String? {
-        guard let error = voiceRecognizerClient.recognizerErrorMessage else { return nil }
+        guard let error = client.recognizerErrorMessage else { return nil }
         return "Error: \(error)"
     }
-
+    
     var statusIcon: String {
-        voiceRecognizerClient.isRecognizerStateOn ? Symbol.statusIconOn : Symbol.statusIconOff
+        client.isRecognizerStateOn ? Symbol.statusIconOn : Symbol.statusIconOff
     }
     
     var currentStatusTitle: String {
@@ -32,8 +32,8 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var statusText: String {
-        guard voiceRecognizerClient.isRecognizerStateOn else { return "State: OFF" }
-        return "State: \(voiceRecognizerClient.recognitionMode.rawValue.uppercased())"
+        guard client.isRecognizerStateOn else { return "State: OFF" }
+        return "State: \(client.recognitionMode.rawValue.uppercased())"
     }
     
     var parameterIcon: String {
@@ -41,12 +41,12 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var parameterText: String {
-        "Parameters: \(voiceRecognizerClient.parameters)"
+        "Parameters: \(client.parameters)"
     }
     
     var currentStateBackgroundColor: Color {
-        guard let error = voiceRecognizerClient.recognizerErrorMessage else {
-            return voiceRecognizerClient.isRecognizerStateOn ? Color.green : Color.red
+        guard let error = client.recognizerErrorMessage else {
+            return client.isRecognizerStateOn ? Color.green : Color.red
         }
         
         return error != VoiceRecognizerService.RecognizerError.notRequested.message ? Color.red : Color(uiColor: .secondarySystemBackground)
@@ -61,12 +61,12 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var speechText: String {
-        voiceRecognizerClient.rawSpeech.joined(separator: " ")
+        client.rawSpeech.joined(separator: " ")
     }
     
-    var speechBackgroundColor: Color {        
-        guard voiceRecognizerClient.isRecognizerStateOn,
-              !voiceRecognizerClient.rawSpeech.isEmpty else { return Color(uiColor: .secondarySystemBackground) }
+    var speechBackgroundColor: Color {
+        guard client.isRecognizerStateOn,
+              !client.rawSpeech.isEmpty else { return Color(uiColor: .secondarySystemBackground) }
         
         return Color.mint
     }
@@ -76,7 +76,7 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var dataOutputs: [DataOutput] {
-        voiceRecognizerClient.dataOutputs
+        client.dataOutputs
     }
     
     var commandDataOutputIcon: String {
@@ -100,7 +100,7 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     var isVoiceRecognizerListening: Bool {
-        voiceRecognizerClient.isRecognizerStateOn
+        client.isRecognizerStateOn
     }
     
     var navigationTitle: String {
@@ -108,15 +108,15 @@ final class VoiceRecognizerViewModel: ObservableObject {
     }
     
     func toggleRecognizerState() {
-        voiceRecognizerClient.toggleRecognizerState()
+        client.toggleRecognizerState()
     }
     
     func removeDataOutput(from indexSet: IndexSet) {
-        voiceRecognizerClient.dataOutputs.remove(atOffsets: indexSet)
+        client.dataOutputs.remove(atOffsets: indexSet)
     }
-        
+    
     // MARK: Private
     
-    @Republished private var voiceRecognizerClient: ZupanVoiceRecognizerClient
-
+    @Republished private var client: ZupanVoiceRecognizerClient
+    
 }

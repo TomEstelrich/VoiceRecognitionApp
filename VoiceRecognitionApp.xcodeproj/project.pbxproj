@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		E228F3932ABAFB5C00ABE018 /* Transcription.swift in Sources */ = {isa = PBXBuildFile; fileRef = E228F3922ABAFB5C00ABE018 /* Transcription.swift */; };
 		E228F3952ABB1B5B00ABE018 /* Symbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E228F3942ABB1B5B00ABE018 /* Symbol.swift */; };
-		E25A1BB02AB6028C0099F71B /* DataRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1BAF2AB6028C0099F71B /* DataRecognition.swift */; };
 		E25A1BB22AB602C80099F71B /* ZupanVoiceRecognizerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1BB12AB602C80099F71B /* ZupanVoiceRecognizerClient.swift */; };
 		E25A1BB42AB602E20099F71B /* VoiceRecognizerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25A1BB32AB602E20099F71B /* VoiceRecognizerViewModel.swift */; };
 		E2B3F5802AB8907000928A19 /* VoiceRecognizerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B3F57F2AB8907000928A19 /* VoiceRecognizerService.swift */; };
@@ -23,7 +22,6 @@
 /* Begin PBXFileReference section */
 		E228F3922ABAFB5C00ABE018 /* Transcription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transcription.swift; sourceTree = "<group>"; };
 		E228F3942ABB1B5B00ABE018 /* Symbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbol.swift; sourceTree = "<group>"; };
-		E25A1BAF2AB6028C0099F71B /* DataRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRecognition.swift; sourceTree = "<group>"; };
 		E25A1BB12AB602C80099F71B /* ZupanVoiceRecognizerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZupanVoiceRecognizerClient.swift; sourceTree = "<group>"; };
 		E25A1BB32AB602E20099F71B /* VoiceRecognizerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRecognizerViewModel.swift; sourceTree = "<group>"; };
 		E2B3F57F2AB8907000928A19 /* VoiceRecognizerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRecognizerService.swift; sourceTree = "<group>"; };
@@ -52,7 +50,6 @@
 			children = (
 				E228F3922ABAFB5C00ABE018 /* Transcription.swift */,
 				E2F604662AB9B0B9000F4AFE /* DataOutput.swift */,
-				E25A1BAF2AB6028C0099F71B /* DataRecognition.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -223,7 +220,6 @@
 				E25A1BB22AB602C80099F71B /* ZupanVoiceRecognizerClient.swift in Sources */,
 				E2B3F5802AB8907000928A19 /* VoiceRecognizerService.swift in Sources */,
 				E2F604672AB9B0B9000F4AFE /* DataOutput.swift in Sources */,
-				E25A1BB02AB6028C0099F71B /* DataRecognition.swift in Sources */,
 				E228F3932ABAFB5C00ABE018 /* Transcription.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -370,7 +366,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -405,7 +401,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
