@@ -2,15 +2,6 @@
 
 import Foundation
 
-// MARK: DataRecognitionProtocol
-
-protocol DataRecognitionProtocol {
-    
-    var recognizableCommands: [DataRecognition] { get }
-    var recognizableParameters: [DataRecognition] { get }
-    
-}
-
 // MARK: DataRecognition
 
 struct DataRecognition: Identifiable {

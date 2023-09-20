@@ -4,8 +4,9 @@ import Foundation
 
 // MARK: Transcription
 
-struct Transcription {
+struct Transcription: Identifiable {
     
+    let id: UUID = UUID()
     let timestamp: Double
     let message: String
     

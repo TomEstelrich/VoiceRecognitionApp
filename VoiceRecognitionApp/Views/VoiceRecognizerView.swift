@@ -11,85 +11,111 @@ struct VoiceRecognizerView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("CURRENT STATE")
+                Text(viewModel.currentStatusTitle)
                     .font(.caption)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack(alignment: .leading, spacing: 6) {
-                    Label("Status: **\(voiceRecognizerViewModel.stateText)**", systemImage: voiceRecognizerViewModel.stateIcon)
-                        .font(.subheadline)
-                    
-                    Label("Parameters: **\(voiceRecognizerViewModel.parameterText)**", systemImage: voiceRecognizerViewModel.parameterIcon)
-                        .font(.subheadline)
-                        .lineLimit(3)
+                    if let errorText = viewModel.errorText {
+                        Label(errorText, systemImage: viewModel.errorIcon)
+                            .fontWeight(.bold)
+                            .lineLimit(3)
+                    } else {
+                        Label(viewModel.statusText, systemImage: viewModel.statusIcon)
+                            .fontWeight(.bold)
+                            .lineLimit(3)
+                        
+                        Label(viewModel.parameterText, systemImage: viewModel.parameterIcon)
+                            .fontWeight(.bold)
+                            .truncationMode(.head)
+                            .lineLimit(3)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .foregroundColor(Color.green)
+                        .foregroundColor(viewModel.currentStateBackgroundColor)
+                        .animation(.easeInOut, value: viewModel.currentStateBackgroundColor)
                         .lineLimit(3)
                 )
                 .padding(.bottom)
                 
-                Text("CURRENT SPEECH")
+                Text(viewModel.currentSpeechTitle)
                     .font(.caption)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack {
-                    Label("**\(voiceRecognizerViewModel.speechText)**", systemImage: voiceRecognizerViewModel.speechIcon)
-                        .font(.subheadline)
-                        .lineLimit(3)
+                    Label(viewModel.speechText, systemImage: viewModel.speechIcon)
+                        .fontWeight(.bold)
+                        .truncationMode(.head)
+                        .lineLimit(2)
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .foregroundColor(Color.cyan)
+                        .foregroundColor(viewModel.speechBackgroundColor)
+                        .animation(.easeInOut, value: viewModel.speechBackgroundColor)
                 )
                 .padding(.bottom)
             }
             .padding(.horizontal)
             
-            Section {
-                Text("VALUES")
+            VStack {
+                Text(viewModel.dataOutputsTitle)
                     .font(.caption)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
                 
-                if voiceRecognizerViewModel.dataOutputs.isEmpty {
-                    Label("No values", systemImage: voiceRecognizerViewModel.commandIcon)
+                if viewModel.dataOutputs.isEmpty {
+                    Label(viewModel.emptyDataOutputText, systemImage: viewModel.commandDataOutputIcon)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color(uiColor: .secondarySystemBackground))
                 } else {
                     List {
-                        ForEach(voiceRecognizerViewModel.dataOutputs) { dataOutput in
-                            VStack(alignment: .leading) {
-                                Label("Command: **\(dataOutput.command.rawValue.uppercased())**", systemImage: voiceRecognizerViewModel.commandIcon)
-                                    .font(.subheadline)
+                        ForEach(viewModel.dataOutputs) { dataOutput in
+                            VStack(alignment: .leading, spacing: 6) {
+                                Label(dataOutput.command.capitalized, systemImage: viewModel.commandDataOutputIcon)
+                                    .fontWeight(.bold)
                                     .foregroundColor(.primary)
                                 
-                                Label("Value: **\(dataOutput.parameters.description)**", systemImage: voiceRecognizerViewModel.valueIcon)
-                                    .font(.subheadline)
+                                Label(dataOutput.parameters, systemImage: viewModel.valueDataOutputIcon)
+                                    .fontWeight(.bold)
                                     .foregroundColor(.primary)
                             }
+                            .padding(.vertical, 8)
                         }
-                        .listRowBackground(Color.gray.opacity(0.25))
+                        .onDelete { indexSet in
+                            viewModel.removeDataOutput(from: indexSet)
+                        }
+                        .listRowBackground(Color(uiColor: .secondarySystemBackground))
                     }
                     .listStyle(.plain)
                 }
 
             }
-            .navigationTitle("Voice Recognizer")
+            .navigationTitle(viewModel.navigationTitle)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.toggleRecognizerState()
+                    } label: {
+                        Image(systemName: viewModel.recognizerStateToggleIcon)
+                            .font(.title3)
+                            .foregroundColor(viewModel.recognizerStateToggleIconColor)
+                    }
+                }
+            }
         }
     }
     
     // MARK: Private
     
-    @StateObject private var voiceRecognizerViewModel: VoiceRecognizerViewModel = VoiceRecognizerViewModel(service: VoiceRecognizerService())
+    @StateObject private var viewModel: VoiceRecognizerViewModel = VoiceRecognizerViewModel(service: ZupanVoiceRecognizerClient())
     
 }
 

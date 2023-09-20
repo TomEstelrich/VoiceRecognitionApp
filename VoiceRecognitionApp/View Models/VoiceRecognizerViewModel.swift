@@ -95,6 +95,10 @@ final class VoiceRecognizerViewModel: ObservableObject {
         Symbol.recognizerStateToggleIcon
     }
     
+    var recognizerStateToggleIconColor: Color {
+        isVoiceRecognizerListening ? Color.red : Color.gray
+    }
+    
     var isVoiceRecognizerListening: Bool {
         voiceRecognizerClient.isRecognizerStateOn
     }

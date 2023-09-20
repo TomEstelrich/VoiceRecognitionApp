@@ -3,6 +3,15 @@
 import Foundation
 import Combine
 
+// MARK: VoiceRecognizerProtocol
+
+protocol VoiceRecognizerProtocol {
+    
+    var recognizableCommands: [DataRecognition] { get }
+    var recognizableParameters: [DataRecognition] { get }
+    
+}
+
 // MARK: ZupanVoiceRecognizerClient
 
 final class ZupanVoiceRecognizerClient: ObservableObject {
@@ -137,9 +146,9 @@ final class ZupanVoiceRecognizerClient: ObservableObject {
     }
 }
 
-// MARK: DataRecognitionProtocol
+// MARK: VoiceRecognizerProtocol
 
-extension ZupanVoiceRecognizerClient: DataRecognitionProtocol {
+extension ZupanVoiceRecognizerClient: VoiceRecognizerProtocol {
     
     var recognizableCommands: [DataRecognition] {
         [
